@@ -91,7 +91,7 @@ class _MovieDetails extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
           child: Text('Genders', style: textStyle.titleLarge),
         ),
 
