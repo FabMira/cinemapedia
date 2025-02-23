@@ -6,6 +6,7 @@ import 'package:cinemapedia/domain/entities/movies.dart';
 
 import 'package:cinemapedia/presentation/providers/providers.dart';
 import 'package:cinemapedia/presentation/providers/movies/movie_info_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class MovieScreen extends ConsumerStatefulWidget {
   static const name = 'movie-screen';
@@ -23,6 +24,9 @@ class MovieScreenState extends ConsumerState<MovieScreen> {
     super.initState();
     ref.read(movieInfoProvider.notifier).loadMovie(widget.movieId);
     ref.read(actorsByMovieProvider.notifier).loadActors(widget.movieId);
+    ref
+        .read(recommendedMoviesProvider.notifier)
+        .loadRecommendedMovies(widget.movieId);
   }
 
   @override
@@ -94,7 +98,6 @@ class _MovieDetails extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
           child: Text('Genders', style: textStyle.titleLarge),
         ),
-
         Padding(
           padding: const EdgeInsets.all(8),
           child: Wrap(
@@ -110,14 +113,19 @@ class _MovieDetails extends StatelessWidget {
             ],
           ),
         ),
-
-        //TODO: mostrar actores Listview
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text('Cast', style: textStyle.titleLarge),
         ),
         _ActorsByMovie(movieId: movie.id.toString()),
-
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
+          child: Text('Recommendations', style: textStyle.titleLarge),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _RecommendedMovies(movieId: movie.id.toString()),
+        ),
         const SizedBox(height: 50),
       ],
     );
@@ -152,12 +160,8 @@ class _ActorsByMovie extends ConsumerWidget {
                 FadeInRight(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                    child: Image.network(
-                      actor.profilePath,
-                      height: 180,
-                      width: 135,
-                      fit: BoxFit.cover,
-                    ),
+                    child: Image.network(actor.profilePath,
+                        height: 180, width: 135, fit: BoxFit.cover),
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -232,6 +236,64 @@ class _CustomSliverAppbar extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _RecommendedMovies extends ConsumerWidget {
+  final String movieId;
+  const _RecommendedMovies({required this.movieId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final recommendedMovies = ref.watch(recommendedMoviesProvider);
+    if (recommendedMovies[movieId] == null) return const CircularProgressIndicator(strokeWidth: 2);
+    final List<Movie> movies = recommendedMovies[movieId]!;
+    return SizedBox(
+      height: 300,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: movies.length,
+        itemBuilder: (context, index) {
+          final movie = movies[index];
+          return Container(
+            padding: const EdgeInsets.all(8.0),
+            width: 135,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FadeInRight(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.network(
+                      movie.backdropPath,
+                      height: 180,
+                      width: 135,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress != null) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Center(
+                                child: const CircularProgressIndicator(
+                                    strokeWidth: 2)),
+                          );
+                        }
+                        return GestureDetector(
+                          onTap: () => context.push('/movie/${movie.id}'),
+                          child: FadeIn(child: child),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(movie.title, maxLines: 2),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
