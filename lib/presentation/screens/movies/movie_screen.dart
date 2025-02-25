@@ -119,7 +119,7 @@ class _MovieDetails extends StatelessWidget {
         ),
         _ActorsByMovie(movieId: movie.id.toString()),
         Padding(
-          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
+          padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
           child: Text('Recommendations', style: textStyle.titleLarge),
         ),
         Padding(
