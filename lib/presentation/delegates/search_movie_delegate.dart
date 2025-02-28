@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:cinemapedia/domain/entities/movies.dart';
+import 'package:cinemapedia/domain/entities/movie.dart';
 
 import 'package:cinemapedia/config/helpers/human_formats.dart';
 import 'package:animate_do/animate_do.dart';
