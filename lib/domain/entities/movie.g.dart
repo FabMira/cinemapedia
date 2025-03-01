@@ -157,6 +157,7 @@ Movie _movieDeserialize(
     backdropPath: reader.readString(offsets[1]),
     genreIds: reader.readStringList(offsets[2]) ?? [],
     id: reader.readLong(offsets[3]),
+    isarId: id,
     originalLanguage: reader.readString(offsets[4]),
     originalTitle: reader.readString(offsets[5]),
     overview: reader.readString(offsets[6]),
@@ -168,7 +169,6 @@ Movie _movieDeserialize(
     voteAverage: reader.readDouble(offsets[12]),
     voteCount: reader.readLong(offsets[13]),
   );
-  object.isarId = id;
   return object;
 }
 
