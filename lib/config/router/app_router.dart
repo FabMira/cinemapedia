@@ -30,8 +30,8 @@ final appRouter =
         ]),
         StatefulShellBranch(routes: [
           GoRoute(
-            path: '/categories',
-            builder: (context, state) => CategoriesView(),
+            path: '/popular',
+            builder: (context, state) => PopularView(),
           )
         ]
         ),
