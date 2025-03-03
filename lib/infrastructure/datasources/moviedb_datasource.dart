@@ -1,12 +1,10 @@
-import 'package:cinemapedia/infrastructure/models/moviedb/movie_details.dart';
-import 'package:dio/dio.dart';
-
 import 'package:cinemapedia/config/constants/environment.dart';
 import 'package:cinemapedia/domain/datasources/movies_datasource.dart';
+import 'package:cinemapedia/domain/entities/entities.dart';
+import 'package:cinemapedia/infrastructure/models/models.dart';
+import 'package:cinemapedia/infrastructure/mappers/mappers.dart';
 
-import 'package:cinemapedia/infrastructure/mappers/movie_mapper.dart';
-import 'package:cinemapedia/infrastructure/models/moviedb/moviedb_response.dart';
-import 'package:cinemapedia/domain/entities/movie.dart';
+import 'package:dio/dio.dart';
 
 class MoviedbDatasource extends MoviesDatasource {
   final dio = Dio(BaseOptions(
@@ -62,8 +60,9 @@ class MoviedbDatasource extends MoviesDatasource {
   @override
   Future<Movie> getMovieById(String id) async {
     final response = await dio.get('/movie/$id');
-    if (response.statusCode != 200)
+    if (response.statusCode != 200) {
       throw Exception('Movie with id: $id not found!');
+    }
 
     final movieDetails = MovieDetails.fromJson(response.data);
 
@@ -84,8 +83,29 @@ class MoviedbDatasource extends MoviesDatasource {
   @override
   Future<List<Movie>> getRecommendations({required String id}) async {
     final response = await dio.get('/movie/$id/recommendations');
-    if (response.statusCode != 200)
+    if (response.statusCode != 200) {
       throw Exception('Movie with id: $id not found!');
+    }
     return _jsonToMovies(response.data);
+  }
+
+  @override
+  Future<List<Video>> getYoutubeVideosById(int movieId) async {
+    final response = await dio.get('/movie/$movieId/videos', queryParameters: {
+      'language': 'en-US'
+    });
+
+    final moviedbVideosResponse = MoviedbVideosResponse.fromJson(response.data);
+
+    final videos = <Video>[];
+
+    for (final moviedbVideo in moviedbVideosResponse.results) {
+      if (moviedbVideo.site == 'YouTube') {
+        final video = VideoMapper.moviedbVideoToEntity(moviedbVideo);
+        videos.add(video);
+      }
+    }
+
+    return videos;
   }
 }

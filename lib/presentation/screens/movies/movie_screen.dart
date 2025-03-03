@@ -1,11 +1,11 @@
-import 'package:cinemapedia/domain/repositories/local_storage_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:animate_do/animate_do.dart';
 
 import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/presentation/providers/providers.dart';
+import 'package:cinemapedia/presentation/widgets/widgets.dart';
 
+import 'package:animate_do/animate_do.dart';
 import 'package:go_router/go_router.dart';
 
 class MovieScreen extends ConsumerStatefulWidget {
@@ -94,9 +94,10 @@ class _MovieDetails extends StatelessWidget {
             ],
           ),
         ),
+        VideosFromMovie(movieId: movie.id),
         Padding(
           padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
-          child: Text('Genders', style: textStyle.titleLarge),
+          child: Text('Genres', style: textStyle.titleLarge),
         ),
         Padding(
           padding: const EdgeInsets.all(8),
@@ -204,7 +205,9 @@ class _CustomSliverAppbar extends ConsumerWidget {
       actions: [
         IconButton(
           onPressed: () async {
-            await ref.read(favoriteMoviesProvider.notifier).toggleFavorite(movie);
+            await ref
+                .read(favoriteMoviesProvider.notifier)
+                .toggleFavorite(movie);
             ref.invalidate(isFavoriteProvider(movie.id));
           },
           icon: isFavoriteFuture.when(
